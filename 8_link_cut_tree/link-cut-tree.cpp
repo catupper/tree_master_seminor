@@ -1,8 +1,8 @@
-struct SplayNode{
-    SplayNode *left, *right, *parent;
+struct LinkCutNode{
+    LinkCutNode *left, *right, *parent;
     int size, value;
 
-    SplayNode(){
+    LinkCutNode(){
         left = nullptr;
         right = nullptr;
         parent = nullptr;
@@ -10,7 +10,7 @@ struct SplayNode{
     }
 
     void rotate(){
-        SplayNode *pp, *p, *c;
+        LinkCutNode *pp, *p, *c;
         p = this->parent;
         pp = p->parent;
 
@@ -62,3 +62,36 @@ struct SplayNode{
         if(this->right)this->size += this->right->size;
     }    
 };
+
+typedef LinkCutNode LCN;
+
+void access(LCN *v){
+    while(true){
+        v->splay();
+        v->right = nullptr;
+        v->update();
+        if(v->parent == nullptr)break;
+        v->parent->splay();
+        v->parent->right = v;
+        v->parent->update();
+    }
+}
+
+void link(LCN *c, LCN *p){
+    c->parent = p;
+}
+
+void cut(LCN *c){
+    access(c);
+    c->left->parent = nullptr;
+    c->left = nullptr;
+    c->update();
+}
+
+LCN *root(LCN *v){
+    access(v);
+    LCN *now = v;
+    while(now->left != nullptr)now = now->left;
+    now->splay();
+    return now;                    
+}
